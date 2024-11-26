@@ -18,13 +18,12 @@ def test_model():
     
     assert has_fc or has_gap, "Neither Fully Connected Layer nor GAP is used."
 
-    # Read and print training logs
-    with open("training_logs.txt", "r") as log_file:
-        logs = log_file.readlines()
-        print("Training Logs:")
-        for line in logs:
-            print(line.strip())
+    # Since we are not using log files, we can run the model to see the output
+    print("Running model to see output...")
+    # You can add a dummy input to test the model if needed
+    dummy_input = torch.randn(1, 1, 28, 28)  # Example input for MNIST
+    output = model(dummy_input)
+    print("Model output:", output)
 
 if __name__ == "__main__":
     test_model()
-    print("All tests passed successfully!")
