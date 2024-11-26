@@ -12,34 +12,43 @@ class MNIST_CNN(nn.Module):
             nn.Conv2d(1, 4, kernel_size=3, padding=1),  # 28x28x4
             nn.BatchNorm2d(4),
             nn.ReLU(),
+
             nn.Conv2d(4, 8, kernel_size=3, padding=1),  # 28x28x8
             nn.BatchNorm2d(8),
             nn.ReLU(),
             nn.MaxPool2d(2, 2),  # 14x14x8
+
             nn.Conv2d(8, 12, kernel_size=3, padding=1),  # 14x14x12
             nn.BatchNorm2d(12),
             nn.ReLU(),
-            nn.Conv2d(12, 16, kernel_size=3, padding=1),  # 14x14x16
-            nn.BatchNorm2d(16),
+
+            nn.Conv2d(12, 24, kernel_size=3, padding=1),  # 14x14x24
+            nn.BatchNorm2d(24),
             nn.ReLU(),
-            nn.MaxPool2d(2, 2),  # 7x7x16
-            nn.Conv2d(16, 32, kernel_size=3, padding=1),  # 7x7x32
-            nn.BatchNorm2d(32),
+            nn.MaxPool2d(2, 2),  # 7x7x24
+
+            nn.Conv2d(24, 36, kernel_size=3, padding=1),  # 7x7x36
+            nn.BatchNorm2d(36),
             nn.ReLU(),
+
+            nn.Conv2d(36, 24, kernel_size=3, padding=1),  # 7x7x24
+            nn.BatchNorm2d(24),
+            nn.ReLU(),
+
             nn.Dropout2d(0.15)
         )
-        
+
+        # Replace fully connected layers with a GAP layer
         self.classifier = nn.Sequential(
             nn.AdaptiveAvgPool2d(1),  # Global Average Pooling
             nn.Flatten(),  # Flatten the output
-            nn.Linear(32, 10)  # Output layer for 10 classes
+            nn.Linear(24, 10)  # Output layer for 10 classes
         )
 
     def forward(self, x):
         x = self.features(x)
         x = self.classifier(x)
         return x
-
 def train_model():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
