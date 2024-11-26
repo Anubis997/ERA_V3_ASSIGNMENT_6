@@ -26,7 +26,7 @@ class MNIST_CNN(nn.Module):
             nn.Conv2d(16, 32, kernel_size=3, padding=1),  # 7x7x32
             nn.BatchNorm2d(32),
             nn.ReLU(),
-            nn.Dropout2d(0.25)
+            nn.Dropout2d(0.15)
         )
         
         self.classifier = nn.Sequential(
