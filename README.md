@@ -32,8 +32,6 @@ You can view the test logs and results in the GitHub Actions section of this rep
 
 [Link to GitHub Actions](https://github.com/Anubis997/ERA_V3_ASSIGNMENT_7/actions)
 
-## Validation/Test Accuracy
-The model achieved a test accuracy of **XX%** on the validation dataset.
 
 ## How to Run
 1. Clone the repository:

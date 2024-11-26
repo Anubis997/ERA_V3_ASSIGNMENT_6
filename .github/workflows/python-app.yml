@@ -22,4 +22,4 @@ jobs:
 
     - name: Run tests
       run: |
-        python -m unittest discover -s . -p "test_model.py"  # Run your test file
+        python Test.py  # Run your test file
