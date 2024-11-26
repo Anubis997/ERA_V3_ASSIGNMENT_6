@@ -18,5 +18,13 @@ def test_model():
     
     assert has_fc or has_gap, "Neither Fully Connected Layer nor GAP is used."
 
+    # Read and print training logs
+    with open("training_logs.txt", "r") as log_file:
+        logs = log_file.readlines()
+        print("Training Logs:")
+        for line in logs:
+            print(line.strip())
+
 if __name__ == "__main__":
     test_model()
+    print("All tests passed successfully!")

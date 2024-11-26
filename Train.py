@@ -58,7 +58,7 @@ def train_model():
     
     # Enhanced data transformations for better accuracy with data augmentation
     transform = transforms.Compose([
-        transforms.RandomCrop(28, padding=2),  # Randomly crop images to 28x28 with padding
+        transforms.RandomCrop(28, padding=2),
         transforms.ToTensor(),
         transforms.Normalize((0.1307,), (0.3081,))
     ])
@@ -67,21 +67,17 @@ def train_model():
     full_trainset = torchvision.datasets.MNIST(root='./data', train=True,
                                         download=True, transform=transform)
     
-    # Split the dataset into training (50,000) and test (10,000) sets
-    train_size = 50000  # 50,000 for training
-    test_size = 10000   # 10,000 for testing
+    train_size = 50000
+    test_size = 10000
     trainset, testset = torch.utils.data.random_split(full_trainset, [train_size, test_size])
     
-    # Data loaders
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=32,
                                             shuffle=True, num_workers=4)
     testloader = torch.utils.data.DataLoader(testset, batch_size=32,
                                             shuffle=False, num_workers=4)
     
-    # Initialize model
     model = MNIST_CNN().to(device)
     
-    # Print parameter count
     param_count = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"\nModel has {param_count} parameters")
     
@@ -91,73 +87,69 @@ def train_model():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.002)
     
-    # Training
-    num_epochs = 20  # Set to 20 epochs
-    consecutive_epochs_above_threshold = 0
-    accuracy_threshold = 99.4  # Accuracy threshold
-    for epoch in range(num_epochs):
-        model.train()
-        correct = 0
-        total = 0
-        running_loss = 0.0
-        total_batches = len(trainloader)
-        
-        print(f'\nEpoch: {epoch + 1}/{num_epochs}')
-        print('-' * 60)
-        
-        for batch_idx, (data, target) in enumerate(trainloader):
-            data, target = data.to(device), target.to(device)
-            optimizer.zero_grad()
-            output = model(data)
-            loss = criterion(output, target)
-            loss.backward()
-            optimizer.step()
+    # Open a log file to write training logs
+    with open("training_logs.txt", "w") as log_file:
+        num_epochs = 20
+        consecutive_epochs_above_threshold = 0
+        accuracy_threshold = 99.4
+        for epoch in range(num_epochs):
+            model.train()
+            correct = 0
+            total = 0
+            running_loss = 0.0
+            total_batches = len(trainloader)
             
-            running_loss += loss.item()
-            _, predicted = output.max(1)
-            total += target.size(0)
-            correct += predicted.eq(target).sum().item()
-        
-        # Calculate final training accuracy and average loss for the epoch
-        final_train_accuracy = 100. * correct / total
-        average_loss = running_loss / total_batches
-        
-        # Calculate test accuracy
-        model.eval()  # Set the model to evaluation mode
-        test_correct = 0
-        test_total = 0
-        
-        with torch.no_grad():  # Disable gradient calculation for testing
-            for data, target in testloader:
+            log_file.write(f'\nEpoch: {epoch + 1}/{num_epochs}\n')
+            log_file.write('-' * 60 + '\n')
+            
+            for batch_idx, (data, target) in enumerate(trainloader):
                 data, target = data.to(device), target.to(device)
+                optimizer.zero_grad()
                 output = model(data)
-                _, test_predicted = output.max(1)
-                test_total += target.size(0)
-                test_correct += test_predicted.eq(target).sum().item()
-        
-        final_test_accuracy = 100. * test_correct / test_total
-        
-        print(f'Loss: {average_loss:.4f} | Train Accuracy: {final_train_accuracy:.2f}% | Test Accuracy: {final_test_accuracy:.2f}%')
-        
-        # Check if the training accuracy exceeds the threshold
-        if final_train_accuracy >= accuracy_threshold:
-            consecutive_epochs_above_threshold += 1
-            print(f'Train Accuracy above {accuracy_threshold}% for {consecutive_epochs_above_threshold} consecutive epochs.')
-        else:
-            consecutive_epochs_above_threshold = 0  # Reset the counter if below threshold
-        
-        # Stop training if the accuracy has been above the threshold for more than 2 epochs
-        if consecutive_epochs_above_threshold > 2:
-            print(f'Stopping training early after {epoch + 1} epochs due to high test accuracy.')
-            break
+                loss = criterion(output, target)
+                loss.backward()
+                optimizer.step()
+                
+                running_loss += loss.item()
+                _, predicted = output.max(1)
+                total += target.size(0)
+                correct += predicted.eq(target).sum().item()
+            
+            final_train_accuracy = 100. * correct / total
+            average_loss = running_loss / total_batches
+            
+            # Calculate test accuracy
+            model.eval()
+            test_correct = 0
+            test_total = 0
+            
+            with torch.no_grad():
+                for data, target in testloader:
+                    data, target = data.to(device), target.to(device)
+                    output = model(data)
+                    _, test_predicted = output.max(1)
+                    test_total += target.size(0)
+                    test_correct += test_predicted.eq(target).sum().item()
+            
+            final_test_accuracy = 100. * test_correct / test_total
+            
+            # Log the results
+            log_file.write(f'Loss: {average_loss:.4f} | Train Accuracy: {final_train_accuracy:.2f}% | Test Accuracy: {final_test_accuracy:.2f}%\n')
+            
+            if final_test_accuracy >= accuracy_threshold:
+                consecutive_epochs_above_threshold += 1
+                log_file.write(f'Test Accuracy above {accuracy_threshold}% for {consecutive_epochs_above_threshold} consecutive epochs.\n')
+            else:
+                consecutive_epochs_above_threshold = 0
+            
+            if consecutive_epochs_above_threshold > 2:
+                log_file.write(f'Stopping training early after {epoch + 1} epochs due to high test accuracy.\n')
+                break
     
     # Save model with timestamp
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     save_path = f'mnist_model_{timestamp}.pth'
     torch.save(model.state_dict(), save_path)
-    
-    # Update README with the latest accuracy
-    update_readme(final_test_accuracy)
     
     return model, final_test_accuracy
 
