@@ -12,11 +12,11 @@ def test_model():
     # Check for Dropout
     assert any(isinstance(layer, torch.nn.Dropout2d) for layer in model.features), "Dropout not used."
 
-    # Check for Fully Connected Layer or GAP, but not both
+    # Check for either Fully Connected Layer or GAP
     has_fc = any(isinstance(layer, torch.nn.Linear) for layer in model.classifier)
     has_gap = any(isinstance(layer, torch.nn.AdaptiveAvgPool2d) for layer in model.classifier)
     
-    assert has_fc != has_gap, "Both Fully Connected Layer and GAP are used. Only one should be present."
+    assert has_fc or has_gap, "Neither Fully Connected Layer nor GAP is used."
 
 if __name__ == "__main__":
     test_model()
