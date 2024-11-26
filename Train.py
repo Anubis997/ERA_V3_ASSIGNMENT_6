@@ -69,7 +69,6 @@ def train_model():
     num_epochs = 20
     consecutive_epochs_above_threshold = 0
     accuracy_threshold = 99.4
-    training_logs = []  # To capture training logs
 
     for epoch in range(num_epochs):
         model.train()
@@ -111,9 +110,7 @@ def train_model():
         
         final_test_accuracy = 100. * test_correct / test_total
         
-        # Capture training logs
-        training_logs.append(f'Epoch: {epoch + 1}, Loss: {average_loss:.4f}, Train Accuracy: {final_train_accuracy:.2f}%, Test Accuracy: {final_test_accuracy:.2f}%')
-        
+        # Print training and test accuracy for the epoch
         print(f'Loss: {average_loss:.4f} | Train Accuracy: {final_train_accuracy:.2f}% | Test Accuracy: {final_test_accuracy:.2f}%')
         
         if final_test_accuracy >= accuracy_threshold:
@@ -131,9 +128,7 @@ def train_model():
     save_path = f'mnist_model_{timestamp}.pth'
     torch.save(model.state_dict(), save_path)
     
-    return model, final_test_accuracy, training_logs
+    return model, final_test_accuracy
 
 if __name__ == "__main__":
-    model, accuracy, logs = train_model()
-    for log in logs:
-        print(log)  # Print training logs
+    model, accuracy = train_model()
