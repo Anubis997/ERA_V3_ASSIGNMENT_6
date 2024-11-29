@@ -22,5 +22,5 @@ jobs:
 
     - name: Run tests
       run: |
-        python Test.py  # Run your test file
+        pytest Test.py  # Run your test file
         python Train.py # Train file
