@@ -53,5 +53,6 @@ You can view the test logs and results in the GitHub Actions section of this rep
 
 ## Validation Accuracy logs 
 
-![image](https://github.com/user-attachments/assets/ec03bb6f-30ac-4dbc-b693-8a42f1141f7b)
+![image](https://github.com/user-attachments/assets/ab40a1e6-5055-4be5-a79a-8486db282800)
+
 
