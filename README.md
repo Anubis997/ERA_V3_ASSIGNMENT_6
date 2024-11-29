@@ -51,5 +51,7 @@ You can view the test logs and results in the GitHub Actions section of this rep
    python Train.py
    ```
 
-## License
-This project is licensed under the MIT License.
+## Validation Accuracy logs 
+
+![image](https://github.com/user-attachments/assets/ec03bb6f-30ac-4dbc-b693-8a42f1141f7b)
+
